@@ -2,6 +2,10 @@ import csv
 from optparse import OptionParser
 
 def getSupport(item, transactions):
+	'''
+	Returns:
+	- Support for item in transactions
+	'''
 	freq = 0
 	for transaction in transactions:
 		flag = 1
@@ -13,15 +17,22 @@ def getSupport(item, transactions):
 
 
 def getItemsOverSupportThreshold(CSet, transactions, support):
+	'''
+	Returns:
+	- Subset of CSet with support above threshold
+	'''
 	prunedSet = set()
 	for item in CSet:
 		if getSupport(item, transactions) > support:
-			# do something
 			prunedSet.add(frozenset(item))
 			
 	return prunedSet
 
 def getJoin(itemSet, length):
+	'''
+	Returns:
+	- Frozen set containing the Join of itemSet
+	'''
 	return set([i.union(j) for i in itemSet for j in itemSet if len(i.union(j)) == length])
 
 def getTransactions(data):
@@ -37,11 +48,17 @@ def getTransactions(data):
 		for row in csvreader:
 			rows.append(row)
 			for item in row:
-				CSet.add(frozenset(item)) # tuple (unlike a list) is hashable, hence can be a set element
+				CSet.add(frozenset(item)) # frozenset (unlike a set) is hashable, hence can be a set element
 	return rows, CSet
 
 
 def apriori(data, support, confidence):
+	'''
+	Returns:
+	- Frequent ItemSets
+	- Support
+	- Confidence (TBD)
+	'''
 	transactions, C1 = getTransactions(data)
 	print(transactions)
 	print(C1)
@@ -73,3 +90,12 @@ if __name__ == "__main__":
 	confidence = options.confidence
 	data = options.data
 	apriori(data, support, confidence);
+
+'''
+Things that are pending:
+- Confidence Calculation
+- Association Rules Generation
+- Pruning on Confidence Threshold
+- Visualisation (whatever Mondal means by that)
+- Dataset generation
+'''
