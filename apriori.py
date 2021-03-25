@@ -72,6 +72,45 @@ def apriori(data, support, confidence):
 	print(C3)
 	L3 = getItemsOverSupportThreshold(C3, transactions, support)
 	print(L3)
+	
+    # Generate association rules from the frequent itemsets
+
+	assocRules = dict()
+    # Dictionary which stores Association Rules
+
+	largeSet = dict()
+    # Global dictionary which stores (key = n-itemSets, value = support)
+    # which satisfy minimum support
+
+    currentLSet = prunedSet
+
+    k = 2 
+    while currentLSet != set([]): # generalising 
+    	currentLSet = getJoin(currentLSet, k)
+    	currentCSet = getItemsOverSupportThreshold(currentLSet, transactionList, minSupport)
+    	currentLSet = currentCSet
+    	k = k + 1
+
+	getItems = []
+	for key, value in largeSet.items():
+		getItems.extend([(tuple(item), getSupport(item)) for item in value])
+
+	getRules = []
+	for key, value in list(largeSet.items())[1:]:
+		for item in value:
+			_subsets = map(frozenset, [x for x in subsets(item)])
+			for element in _subsets:
+				remain = item.difference(element)
+				if len(remain) > 0:
+					confidenceCalculated = getSupport(item) / getSupport(element)
+					if confidenceCalculated >= confidence:
+						getRules.append(((tuple(element), tuple(remain)), confidenceCalculated))
+	return getItems, getRules
+
+	# Confidence(A->B) = Support_count(A∪B)/Support_count(A)
+
+	print("Rules generated")
+	print(getRules)
 
 
 if __name__ == "__main__":
