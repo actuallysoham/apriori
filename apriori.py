@@ -2,6 +2,10 @@ import csv
 from optparse import OptionParser
 from itertools import chain, combinations
 
+# For visualisation
+supportLookup = dict()
+freqLookup = dict()
+
 def powerset(iterable): # modified from https://stackoverflow.com/questions/1482308/how-to-get-all-subsets-of-a-set-powerset
     '''
     powerset([1,2,3]) --> () (1,) (2,) (3,) (1,2) (1,3) (2,3) (1,2,3)
@@ -41,6 +45,8 @@ def getSupport(item, transactions):
 			if i not in transaction: flag = 0
 		freq += flag
 	#print(f"Support for {item} is {freq/len(transactions)}")
+	freqLookup[frozenset(item)] = freq
+	supportLookup[frozenset(item)] = freq/len(transactions)
 	return freq/len(transactions)
 
 
@@ -83,14 +89,13 @@ def getTransactions(data):
 
 def apriori(data, support, confidence):
 	'''
-	Returns:
+	Prints:
 	- Frequent ItemSets
 	- Support
 	- Confidence
 	'''
 	transactions, C = getTransactions(data)
-	#print(transactions)
-	#print(C1)
+
 	while(len(C) > 0):
 		L = getItemsOverSupportThreshold(C, transactions, support)
 		#print(L)
@@ -98,28 +103,17 @@ def apriori(data, support, confidence):
 		if (len(C) == 1):
 			L = C
 			break
-		#print(C)
-		#print(C2)
-		#L2 = getItemsOverSupportThreshold(C2, transactions, support)
-		#print(L2)
-		#C3 = getJoin(L2)
-		#print(C3)
-		#L3 = getItemsOverSupportThreshold(C3, transactions, support)
-		#print(L3)
-		#C4 = getJoin(L3)
-		#print(len(C4))
 
-	print(L)
+	print(f"Frequent ItemSets: {L}")
 
 	for item in L:
 		rules = getRules(item)
 
 	for rule in rules:
-		confidence = getConfidence(rule, transactions)
-		print(f"{rule[0]} --> {rule[1]} || Confidence: {confidence}")
+		conf = getConfidence(rule, transactions)
+		if (conf > confidence):
+			print(f"{rule[0]} --> {rule[1]} || Confidence: {conf}")
 
-
-	
 
 
 if __name__ == "__main__":
@@ -132,7 +126,7 @@ if __name__ == "__main__":
 	optparser = OptionParser()
 	optparser.add_option("-d", dest="data", default="data.csv")
 	optparser.add_option("-s", dest="support", default=0.4, type="float")
-	optparser.add_option("-c", dest="confidence", default=0.6, type="float")
+	optparser.add_option("-c", dest="confidence", default=0.7, type="float")
 	(options, args) = optparser.parse_args()
 	support = options.support
 	confidence = options.confidence
@@ -141,7 +135,6 @@ if __name__ == "__main__":
 
 '''
 Things that are pending:
-- Pruning on Confidence Threshold
 - Visualisation (whatever Mondal means by that)
 - Dataset generation
 - Some Optimisations are Possible
