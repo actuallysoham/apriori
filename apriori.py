@@ -23,7 +23,7 @@ def getRules(frequentSet):
 	for subset in powerSet:
 		complementSet = frequentSet.difference(set(subset))
 		rules.append((frozenset(subset),frozenset(complementSet)))
-		#print(f"{frozenset(subset)} --> {frozenset(complementSet)}")
+		print(f"{frozenset(subset)} --> {frozenset(complementSet)}")
 	return rules
 
 def getConfidence(rule, transactions):
@@ -78,12 +78,16 @@ def getTransactions(data):
 	'''
 	rows = list()
 	CSet = set()
+	
 	with open(data, newline='') as csvfile:
 		csvreader = csv.reader(csvfile)
 		for row in csvreader:
 			rows.append(row)
 			for item in row:
-				CSet.add(frozenset(item)) # frozenset (unlike a set) is hashable, hence can be a set element
+				#print(item)
+				CSet.add(frozenset([item])) # frozenset (unlike a set) is hashable, hence can be a set element
+			
+			#CSet.add(frozenset(items))
 	return rows, CSet
 
 
@@ -95,16 +99,33 @@ def apriori(data, support, confidence):
 	- Confidence
 	'''
 	transactions, C = getTransactions(data)
-
+	print(len(transactions))
+	#print("C1:")
+	print(len(C))
 	while(len(C) > 0):
-		L = getItemsOverSupportThreshold(C, transactions, support)
-		#print(L)
-		C = getJoin(L)
-		if (len(C) == 1):
-			L = C
+		newL = getItemsOverSupportThreshold(C, transactions, support)
+		#print("L: ")
+		#print(newL)
+		if (len(newL) < 1):
 			break
+		else: 
+			L = newL
+			C = getJoin(L)
+			#print("C:")
+			#print(C)
 
 	print(f"Frequent ItemSets: {L}")
+	rules = []
+	for item in L:
+		rules += getRules(item)
+	#print(rules)
+	#print(len(rules))
+	for rule in rules:
+		conf = getConfidence(rule, transactions)
+		print(f"{rule[0]} --> {rule[1]} || Confidence: {conf}")
+		
+
+	'''
 
 	for item in L:
 		rules = getRules(item)
@@ -114,7 +135,7 @@ def apriori(data, support, confidence):
 		if (conf > confidence):
 			print(f"{rule[0]} --> {rule[1]} || Confidence: {conf}")
 
-
+	'''
 
 if __name__ == "__main__":
 	'''
