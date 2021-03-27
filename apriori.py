@@ -132,6 +132,7 @@ def apriori(data, support, confidence):
 	#print(assocRules)
 	print(tabulate(assocRules, headers=['Antecedents', 'Consequents', 'Confidence']))
 	visualize(freqLookup)
+	plot3d(freqLookup, supportLookup)
 
 
 
