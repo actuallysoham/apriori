@@ -20,3 +20,6 @@ The following visualisations are provided in **visualize.py**:
 
 ## Datasets
 The current test data sources are **data.csv** and **groceries.csv**. The later has **169 distinct items and ~10,000 transactions**.
+
+## Contributers
+This project was built by [Soham De](https://github.com/actuallysoham), [Manish Rajani](https://github.com/manishrjn23). and [Tanvi Roy](https://github.com/tanviroy).
