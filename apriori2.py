@@ -118,26 +118,7 @@ def apriori(data, support, confidence):
 		if (conf > confidence):
 			print(f"{rule[0]} --> {rule[1]} || Confidence: {conf}")
 
-def visualize():
-	pass
-
-if __name__ == "__main__":
-	'''
-	CLI commands for demo:
-
-	python3 apriori.py -d "datafile.csv" -s 0.25 -c 0.75
-	'''
-
-	optparser = OptionParser()
-	optparser.add_option("-d", dest="data", default="data.csv")
-	optparser.add_option("-s", dest="support", default=0.4, type="float")
-	optparser.add_option("-c", dest="confidence", default=0.7, type="float")
-	(options, args) = optparser.parse_args()
-	support = options.support
-	confidence = options.confidence
-	data = options.data
-	apriori(data, support, confidence);
-	print("=========================");
+def visualize(freqLookup):
 	x_plot=[]
 	y_plot=[]
 	newDict = dict(sorted(freqLookup.items(), key=lambda item: item[1]))
@@ -167,6 +148,27 @@ if __name__ == "__main__":
 	plt.ylabel("Frequency")
 
 	plt.show()
+
+if __name__ == "__main__":
+	'''
+	CLI commands for demo:
+
+	python3 apriori.py -d "datafile.csv" -s 0.25 -c 0.75
+	'''
+
+	optparser = OptionParser()
+	optparser.add_option("-d", dest="data", default="data.csv")
+	optparser.add_option("-s", dest="support", default=0.4, type="float")
+	optparser.add_option("-c", dest="confidence", default=0.7, type="float")
+	(options, args) = optparser.parse_args()
+	support = options.support
+	confidence = options.confidence
+	data = options.data
+	apriori(data, support, confidence)
+	print("=========================")
+
+
+	visualize(freqLookup)
 '''
 Things that are pending:
 - Visualisation (whatever Mondal means by that)

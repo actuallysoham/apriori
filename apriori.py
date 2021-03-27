@@ -1,6 +1,12 @@
+# Soham De
+# Tanvi Roy
+# Manish Rajani
+
 import csv
 from optparse import OptionParser
 from itertools import chain, combinations
+from tabulate import tabulate
+from visualize import *
 
 # For visualisation
 supportLookup = dict()
@@ -23,7 +29,7 @@ def getRules(frequentSet):
 	for subset in powerSet:
 		complementSet = frequentSet.difference(set(subset))
 		rules.append((frozenset(subset),frozenset(complementSet)))
-		print(f"{frozenset(subset)} --> {frozenset(complementSet)}")
+		#print(f"{frozenset(subset)} --> {frozenset(complementSet)}")
 	return rules
 
 def getConfidence(rule, transactions):
@@ -99,64 +105,52 @@ def apriori(data, support, confidence):
 	- Confidence
 	'''
 	transactions, C = getTransactions(data)
-	print(len(transactions))
-	#print("C1:")
-	print(len(C))
+	L = []
+
 	while(len(C) > 0):
 		newL = getItemsOverSupportThreshold(C, transactions, support)
-		#print("L: ")
-		#print(newL)
 		if (len(newL) < 1):
 			break
 		else: 
 			L = newL
 			C = getJoin(L)
-			#print("C:")
-			#print(C)
 
-	print(f"Frequent ItemSets: {L}")
+
+	#print(f"Frequent ItemSets: {L}")
 	rules = []
 	for item in L:
 		rules += getRules(item)
-	#print(rules)
-	#print(len(rules))
-	for rule in rules:
-		conf = getConfidence(rule, transactions)
-		print(f"{rule[0]} --> {rule[1]} || Confidence: {conf}")
-		
 
-	'''
-
-	for item in L:
-		rules = getRules(item)
+	assocRules = []
 
 	for rule in rules:
 		conf = getConfidence(rule, transactions)
 		if (conf > confidence):
-			print(f"{rule[0]} --> {rule[1]} || Confidence: {conf}")
+			assocRules.append([set(rule[0]), set(rule[1]), conf])
+			#print(f"{set(rule[0])} --> {set(rule[1])} || Confidence: {conf}")
+	
+	#print(assocRules)
+	print(tabulate(assocRules, headers=['Antecedents', 'Consequents', 'Confidence']))
+	visualize(freqLookup)
 
-	'''
+
 
 if __name__ == "__main__":
 	'''
 	CLI commands for demo:
 
 	python3 apriori.py -d "datafile.csv" -s 0.25 -c 0.75
+
+	python3 apriori.py -s 0.04 -c 0.4 -d groceries.csv
 	'''
 
 	optparser = OptionParser()
 	optparser.add_option("-d", dest="data", default="data.csv")
 	optparser.add_option("-s", dest="support", default=0.4, type="float")
-	optparser.add_option("-c", dest="confidence", default=0.7, type="float")
+	optparser.add_option("-c", dest="confidence", default=0.0, type="float")
 	(options, args) = optparser.parse_args()
 	support = options.support
 	confidence = options.confidence
 	data = options.data
 	apriori(data, support, confidence);
 
-'''
-Things that are pending:
-- Visualisation (whatever Mondal means by that)
-- Dataset generation
-- Some Optimisations are Possible
-'''
